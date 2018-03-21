@@ -10,6 +10,7 @@ use Kount_Ris_Request_Inquiry;
 use Kount_Ris_Request_Update;
 use Kount_Ris_ValidationException;
 use Kount_Util_ConfigFileReader;
+use Omnifraud\Contracts\ResponseInterface;
 use Omnifraud\Contracts\ServiceInterface;
 use Omnifraud\Request\Request;
 use Omnifraud\Request\RequestException;
@@ -45,7 +46,7 @@ class KountService implements ServiceInterface
         $this->settings = new Kount_Ris_ArraySettings($merged);
     }
 
-    public function trackingCode($pageType)
+    public function trackingCode(string $pageType): string
     {
         if ($pageType !== self::PAGE_CHECKOUT) {
             return '';
@@ -67,8 +68,12 @@ trackingCodes.push(function (sid) {
 JS;
     }
 
-    /** @inheritdoc */
-    public function validateRequest(Request $request, $authResponse = 'A')
+    public function validateRequest(Request $request): ResponseInterface
+    {
+        return $this->doValidateRequest($request, 'A');
+    }
+
+    protected function doValidateRequest(Request $request, $authResponse)
     {
         $inquiry = new Kount_Ris_Request_Inquiry($this->settings);
 
@@ -234,7 +239,7 @@ JS;
      * Convert to basic M/N/X match
      * @see http://www.emsecommerce.net/avs_cvv2_response_codes.htm
      */
-    public function cvvToCvvr($cvv)
+    protected function cvvToCvvr($cvv)
     {
         $values = [
             'M' => 'M',
@@ -253,7 +258,7 @@ JS;
         $this->fakeExecute = $fake;
     }
 
-    public function updateRequest(Request $request)
+    public function updateRequest(Request $request): ResponseInterface
     {
         $update = new Kount_Ris_Request_Update($this->settings);
         $update->setSessionId($request->getSession()->getId());
@@ -266,18 +271,18 @@ JS;
         return new KountResponse($rawResponse);
     }
 
-    public function getRequestExternalLink($requestUid)
+    public function getRequestExternalLink($requestUid): ?string
     {
         $url = $this->config['testing'] ? $this->config['testTransactionUrl'] : $this->config['transactionUrl'];
         return sprintf($url, $requestUid);
     }
 
-    public function logRefusedRequest(Request $request)
+    public function logRefusedRequest(Request $request): void
     {
-        $this->validateRequest($request, 'D');
+        $this->doValidateRequest($request, 'D');
     }
 
-    public function cancelRequest($requestUid)
+    public function cancelRequest(string $requestUid): void
     {
         // Do nothing
     }

@@ -22,7 +22,7 @@ class KountResponse implements ResponseInterface
         $this->risResponse = $risResponse;
     }
 
-    public function getMessages()
+    public function getMessages(): array
     {
         $messages = [];
         foreach ($this->risResponse->getErrors() as $error) {
@@ -34,27 +34,27 @@ class KountResponse implements ResponseInterface
         return $messages;
     }
 
-    public function getPercentScore()
+    public function getPercentScore(): float
     {
         return 100 - $this->risResponse->getScore();
     }
 
-    public function isAsync()
+    public function isAsync(): bool
     {
         return false;
     }
 
-    public function isGuaranteed()
+    public function isGuaranteed(): bool
     {
         return false;
     }
 
-    public function getRawResponse()
+    public function getRawResponse(): string
     {
         return json_encode($this->risResponse->getResponseAsDict());
     }
 
-    public function getRequestUid()
+    public function getRequestUid(): string
     {
         return (string)$this->risResponse->getTransactionId();
     }
