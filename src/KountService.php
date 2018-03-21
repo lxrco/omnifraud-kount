@@ -271,7 +271,7 @@ JS;
         return new KountResponse($rawResponse);
     }
 
-    public function getRequestExternalLink($requestUid): ?string
+    public function getRequestExternalLink(string $requestUid): ?string
     {
         $url = $this->config['testing'] ? $this->config['testTransactionUrl'] : $this->config['transactionUrl'];
         return sprintf($url, $requestUid);
