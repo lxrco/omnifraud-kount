@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Tests\Unit;
 
@@ -121,6 +121,34 @@ class KountServiceTest extends TestCase
             $data = $property->getValue($inquiry);
 
             $this->assertEquals($this->makeExpectedDataArray(), $data);
+
+            return new Kount_Ris_Response('');
+        });
+
+        $driver->validateRequest($request);
+    }
+
+    public function testValidateRequestWithCompleteRequestWithoutBin()
+    {
+        $driver = new KountService([
+            'testing' => true,
+            'MERCHANT_ID' => 'MERCHANT_ID',
+        ]);
+
+        $request = $this->makeTestRequest();
+        $request->getPayment()->setBin(null);
+
+        $driver->setFakeExecute(function (Kount_Ris_Request_Inquiry $inquiry) {
+            $reflection = new ReflectionClass(Kount_Ris_Request_Inquiry::class);
+            $property = $reflection->getProperty('data');
+            $property->setAccessible(true);
+            $data = $property->getValue($inquiry);
+
+            $expected = $this->makeExpectedDataArray();
+            $expected['PENC'] = '';
+            $expected['PTOK'] = '9000';
+
+            $this->assertEquals($expected, $data);
 
             return new Kount_Ris_Response('');
         });
