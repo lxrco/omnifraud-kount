@@ -1,0 +1,36 @@
+{
+    "name": "omnifraud/kount",
+    "description": "Kount driver for the Omnifraud PHP fraud prevention library",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "LXRandCo",
+            "email": "hugo.v@lxrco.com"
+        }
+    ],
+    "require": {
+        "omnifraud/common": "~0.1",
+        "kount/kount-ris-php-sdk": "^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omnifraud\\Kount\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "phpunit"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
