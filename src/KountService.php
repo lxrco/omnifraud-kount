@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Omnifraud\Kount;
 
@@ -87,8 +87,8 @@ JS;
         $inquiry->setIpAddress($request->getSession()->getIp());
 
         // Payment
-        if ($request->getPayment()->getLast4()) {
-            if ($request->getPayment()->getBin()) {
+        if ($request->getPayment()->getLast4() !== null) {
+            if ($request->getPayment()->getBin() !== null) {
                 $cardNumbers = $request->getPayment()->getBin() . 'XXXXXX' . $request->getPayment()->getLast4();
                 $inquiry->setPaymentMasked($cardNumbers);
             } else {
