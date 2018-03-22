@@ -73,7 +73,7 @@ JS;
         return $this->doValidateRequest($request, 'A');
     }
 
-    protected function doValidateRequest(Request $request, $authResponse)
+    protected function doValidateRequest(Request $request, string $authResponse): ResponseInterface
     {
         $inquiry = new Kount_Ris_Request_Inquiry($this->settings);
 
@@ -116,9 +116,7 @@ JS;
                 $product->getPrice()
             );
         }
-        if (count($cart) > 0) {
-            $inquiry->setCart($cart);
-        }
+        $inquiry->setCart($cart);
 
         // Account
         $inquiry->setUnique($request->getAccount()->getId());
