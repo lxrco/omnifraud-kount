@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "omnifraud/common": "dev-master",
+        "omnifraud/common": "^0.1",
         "kount/kount-ris-php-sdk": "^7.0"
     },
     "require-dev": {
