@@ -23,7 +23,7 @@ The only method that is left empty is `cancelRequest` as Kount does not need req
 
 #### Initialisation
 
-The Kount contructor accepts the following configuration values (those are the default values):
+The KountService constructor accepts the following configuration values (those are the default values):
 ```php
 $service = new KountService([
     'testing' => false, // Use testing endpoint
