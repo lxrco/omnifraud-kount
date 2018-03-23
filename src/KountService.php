@@ -26,8 +26,8 @@ class KountService implements ServiceInterface
     protected $config = [
         'testing' => false,
         'website' => 'DEFAULT',
-        'testTransactionUrl' => 'https://awc.test.kount.net/workflow/detail.html?id=%s',
-        'transactionUrl' => 'https://awc.kount.net/workflow/detail.html?id=%s',
+        'testRequestUrl' => 'https://awc.test.kount.net/workflow/detail.html?id=%s',
+        'requestUrl' => 'https://awc.kount.net/workflow/detail.html?id=%s',
     ];
 
     public function __construct(array $config)
@@ -271,7 +271,7 @@ JS;
 
     public function getRequestExternalLink(string $requestUid): ?string
     {
-        $url = $this->config['testing'] ? $this->config['testTransactionUrl'] : $this->config['transactionUrl'];
+        $url = $this->config['testing'] ? $this->config['testRequestUrl'] : $this->config['requestUrl'];
         return sprintf($url, $requestUid);
     }
 
