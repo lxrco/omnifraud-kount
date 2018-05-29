@@ -36,7 +36,7 @@ $service = new KountService([
 #### Submitting a sale
 
 Submitting a (successful or refused) sale to Kount requires a Session ID, so you will need to [implement the frontend code](https://github.com/lxrco/omnifraud#frontend-code) on the checkout page:
-```php
+```
 <script>
 <?= $fraudService->trackingCode(ServiceInterface::PAGE_CHECKOUT, $myGeneratedCustomerId); ?>
 </script>
