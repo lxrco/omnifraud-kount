@@ -46,7 +46,7 @@ class KountService implements ServiceInterface
         $this->settings = new Kount_Ris_ArraySettings($merged);
     }
 
-    public function trackingCode(string $pageType): string
+    public function trackingCode(string $pageType, string $sessionId, bool $quote = true): string
     {
         if ($pageType !== self::PAGE_CHECKOUT) {
             return '';
@@ -55,8 +55,12 @@ class KountService implements ServiceInterface
         $dataCollector = $this->config['testing'] ? 'sandbox02.kaxsdc.com' : 'prod01.kaxsdc.com';
         $merchantId = $this->settings->getMerchantId();
 
+        if ($quote) {
+            $sessionId = json_encode($sessionId);
+        }
+
         return <<<JS
-trackingCodes.push(function (sid) {
+(function (sid) {
     var script = document.createElement('script');
     script.setAttribute('src', 'https://{$dataCollector}/collect/sdk?m={$merchantId}&s=' + sid);
     var img = document.createElement('img');
@@ -64,7 +68,7 @@ trackingCodes.push(function (sid) {
 
     document.body.appendChild(script);
     document.body.appendChild(img);
-});
+})($sessionId);
 JS;
     }
 
@@ -280,7 +284,7 @@ JS;
         $this->doValidateRequest($request, 'D');
     }
 
-    public function cancelRequest(string $requestUid): void
+    public function cancelRequest(Request $request): void
     {
         // Do nothing
     }

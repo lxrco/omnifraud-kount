@@ -35,7 +35,14 @@ $service = new KountService([
 
 #### Submitting a sale
 
-Submitting a (successful or refused) sale to Kount requires a Session ID, so you will need to [implement the frontend code](https://github.com/lxrco/omnifraud#frontend-code).
+Submitting a (successful or refused) sale to Kount requires a Session ID, so you will need to [implement the frontend code](https://github.com/lxrco/omnifraud#frontend-code) on the checkout page:
+```php
+<script>
+<?= $fraudService->trackingCode(ServiceInterface::PAGE_CHECKOUT, $myGeneratedCustomerId); ?>
+</script>
+<!-- Pass it back to the server -->
+<input type="hidden" name="sessionId" value="<?= $myGeneratedCustomerId ?>">
+```
 
 Then you can use the `validateRequest` method to get a response:
 
@@ -109,7 +116,7 @@ if ($order->approved) {
     $response = $service->validateRequest($request);
     
     // Get score, SCORE IS INVERTED from the Kount logic to follow the Omnifraud convention so 100 is GOOD and 0 is BAD
-    $score = $response->getPercentScore();
+    $score = $response->getScore();
     
     // Request UID, save for later reference, you must also save sessionId if you want to update the case later
     $requestUid = $response->getRequestUid();

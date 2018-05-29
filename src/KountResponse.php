@@ -22,24 +22,12 @@ class KountResponse implements ResponseInterface
         $this->risResponse = $risResponse;
     }
 
-    public function getMessages(): array
-    {
-        $messages = [];
-        foreach ($this->risResponse->getErrors() as $error) {
-            $messages[] = new BaseMessage(MessageInterface::TYPE_ERROR, 'ERR', $error);
-        }
-        foreach ($this->risResponse->getWarnings() as $warning) {
-            $messages[] = new BaseMessage(MessageInterface::TYPE_WARNING, 'WAR', $warning);
-        }
-        return $messages;
-    }
-
-    public function getPercentScore(): float
+    public function getScore(): float
     {
         return 100 - $this->risResponse->getScore();
     }
 
-    public function isAsync(): bool
+    public function isPending(): bool
     {
         return false;
     }

@@ -90,7 +90,7 @@ class KountServiceTest extends TestCase
 
         $this->assertContains(
             "'https://sandbox02.kaxsdc.com/collect/sdk?m=MERCHANT_ID&s=' + sid",
-            $driver->trackingCode(ServiceInterface::PAGE_CHECKOUT) . "\n"
+            $driver->trackingCode(ServiceInterface::PAGE_CHECKOUT, 'AB123456') . "\n"
         );
         $driver = new KountService([
             'testing' => false,
@@ -99,10 +99,15 @@ class KountServiceTest extends TestCase
 
         $this->assertContains(
             "'https://prod01.kaxsdc.com/collect/sdk?m=MERCHANT_ID&s=' + sid",
-            $driver->trackingCode(ServiceInterface::PAGE_CHECKOUT) . "\n"
+            $driver->trackingCode(ServiceInterface::PAGE_CHECKOUT, 'AB123456') . "\n"
         );
 
-        $this->assertEquals('', $driver->trackingCode(ServiceInterface::PAGE_ALL));
+        $this->assertEquals('', $driver->trackingCode(ServiceInterface::PAGE_ALL, 'AB123456'));
+
+        $this->assertContains('"AB123456"', $driver->trackingCode(ServiceInterface::PAGE_CHECKOUT, 'AB123456'));
+        $this->assertNotContains('"uid"', $driver->trackingCode(ServiceInterface::PAGE_CHECKOUT, 'uid', false));
+        $this->assertContains('uid', $driver->trackingCode(ServiceInterface::PAGE_CHECKOUT, 'uid', false));
+
     }
 
     public function testValidateRequestWithCompleteRequest()
@@ -195,18 +200,6 @@ class KountServiceTest extends TestCase
     public function testResponseParsing()
     {
         $mockResponse = Mockery::mock(Kount_Ris_Response::class);
-        $mockResponse->shouldReceive('getErrors')
-            ->once()
-            ->andReturn([
-                'error1',
-                'error2',
-            ]);
-        $mockResponse->shouldReceive('getWarnings')
-            ->once()
-            ->andReturn([
-                'warning1',
-                'warning2',
-            ]);
         $mockResponse->shouldReceive('getScore')
             ->once()
             ->andReturn(55);
@@ -233,24 +226,10 @@ class KountServiceTest extends TestCase
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         $this->assertEquals('{"STATUS":"GOOD"}', $response->getRawResponse());
-        $this->assertEquals(45, $response->getPercentScore());
-        $this->assertFalse($response->isAsync());
+        $this->assertEquals(45, $response->getScore());
+        $this->assertFalse($response->isPending());
         $this->assertFalse($response->isGuaranteed());
         $this->assertEquals('6587', $response->getRequestUid());
-
-        $messages = $response->getMessages();
-
-        $this->assertCount(4, $messages);
-        $flat_errors = [];
-        foreach ($messages as $message) {
-            $flat_errors[] = [$message->getType(), $message->getMessage()];
-        }
-        $this->assertEquals([
-            [MessageInterface::TYPE_ERROR, 'error1'],
-            [MessageInterface::TYPE_ERROR, 'error2'],
-            [MessageInterface::TYPE_WARNING, 'warning1'],
-            [MessageInterface::TYPE_WARNING, 'warning2'],
-        ], $flat_errors);
     }
 
     public function testUpdateAsync()
